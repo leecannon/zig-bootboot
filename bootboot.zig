@@ -103,8 +103,6 @@ pub const Arch = extern union {
     aarch64: Aarch64,
 };
 
-extern var fb: u32;
-
 pub inline fn getFramebuffer() [*]volatile u32 {
     return @ptrCast([*]volatile u32, &fb);
 }
@@ -113,13 +111,9 @@ pub inline fn getFramebufferSlice() []volatile u32 {
     return getFramebuffer()[0..(bootboot.fb_width * bootboot.fb_height)];
 }
 
-extern const environment: u8;
-
 pub inline fn getEnvironment() [*:0]const u8 {
     return @ptrCast([*:0]const u8, &environment);
 }
-
-pub extern const bootboot: BOOTBOOT;
 
 /// first 64 bytes is platform independent
 pub const BOOTBOOT = packed struct {
@@ -174,3 +168,59 @@ pub const BOOTBOOT = packed struct {
     /// from 128th byte, MMapEnt[], more records may follow
     mmap: MMapEnt,
 };
+
+test "" {
+    std.testing.refAllDecls(@This());
+}
+
+// Everything below this point it to enable testing this file as extern things fail to be resolved at link time
+
+usingnamespace buildExterns();
+const std = @import("std");
+fn buildExterns() type {
+    if (comptime std.builtin.is_test) {
+        return struct {
+            pub var fb: u32 = 0;
+            pub const environment: u8 = 0;
+            pub const bootboot: BOOTBOOT = .{
+                .magic = [_]u8{0} ** 4,
+                .size = 0,
+                .protocol = 0,
+                .fb_type = .ARGB,
+                .numcores = 0,
+                .bspid = 0,
+                .timezone = 0,
+                .datetime = [_]u8{0} ** 8,
+                .initrd_ptr = 0,
+                .initrd_size = 0,
+                .fb_ptr = 0,
+                .fb_size = 0,
+                .fb_width = 0,
+                .fb_height = 0,
+                .fb_scanline = 0,
+                .arch = .{
+                    .x86_64 = .{
+                        .acpi_ptr = 0,
+                        .smbi_ptr = 0,
+                        .efi_ptr = 0,
+                        .mp_ptr = 0,
+                        .unused0 = 0,
+                        .unused1 = 0,
+                        .unused2 = 0,
+                        .unused3 = 0,
+                    },
+                },
+                .mmap = .{
+                    .ptr = 0,
+                    .size = 0,
+                },
+            };
+        };
+    } else {
+        return struct {
+            pub extern var fb: u32;
+            pub extern const environment: u8;
+            pub extern const bootboot: BOOTBOOT;
+        };
+    }
+}
