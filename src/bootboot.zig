@@ -180,8 +180,8 @@ const std = @import("std");
 fn buildExterns() type {
     if (comptime std.builtin.is_test) {
         return struct {
-            pub var fb: u32 = 0;
-            pub const environment: u8 = 0;
+            pub var fb: u32 = 1;
+            pub const environment: u8 = 1;
             pub const bootboot: BOOTBOOT = .{
                 .magic = [_]u8{0} ** 4,
                 .size = 0,
@@ -191,19 +191,19 @@ fn buildExterns() type {
                 .bspid = 0,
                 .timezone = 0,
                 .datetime = [_]u8{0} ** 8,
-                .initrd_ptr = 0,
+                .initrd_ptr = 1,
                 .initrd_size = 0,
-                .fb_ptr = 0,
+                .fb_ptr = 1,
                 .fb_size = 0,
                 .fb_width = 0,
                 .fb_height = 0,
                 .fb_scanline = 0,
                 .arch = .{
                     .x86_64 = .{
-                        .acpi_ptr = 0,
-                        .smbi_ptr = 0,
-                        .efi_ptr = 0,
-                        .mp_ptr = 0,
+                        .acpi_ptr = 1,
+                        .smbi_ptr = 1,
+                        .efi_ptr = 1,
+                        .mp_ptr = 1,
                         .unused0 = 0,
                         .unused1 = 0,
                         .unused2 = 0,
@@ -211,7 +211,7 @@ fn buildExterns() type {
                     },
                 },
                 .mmap = .{
-                    .ptr = 0,
+                    .ptr = 1,
                     .size = 0,
                 },
             };
