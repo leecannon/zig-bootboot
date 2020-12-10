@@ -116,7 +116,7 @@ pub inline fn getEnvironment() [*:0]const u8 {
 }
 
 /// first 64 bytes is platform independent
-pub const BOOTBOOT = packed struct {
+pub const Bootboot = packed struct {
     /// 'BOOT' magic
     magic: [4]u8,
 
@@ -182,7 +182,7 @@ fn buildExterns() type {
         return struct {
             pub var fb: u32 = 1;
             pub const environment: u8 = 1;
-            pub const bootboot: BOOTBOOT = .{
+            pub const bootboot: Bootboot = .{
                 .magic = [_]u8{0} ** 4,
                 .size = 0,
                 .protocol = 0,
@@ -220,7 +220,7 @@ fn buildExterns() type {
         return struct {
             pub extern var fb: u32;
             pub extern const environment: u8;
-            pub extern const bootboot: BOOTBOOT;
+            pub extern const bootboot: Bootboot;
         };
     }
 }
