@@ -1,54 +1,59 @@
 pub const BOOTBOOT_MAGIC = "BOOT";
 
 /// memory mapped IO virtual address
-pub const BOOTBOOT_MMIO = 0xfffffffff8000000;
+pub const BOOTBOOT_MMIO: u64 = 0xfffffffff8000000;
 
 /// frame buffer virtual address
-pub const BOOTBOOT_FB = 0xfffffffffc000000;
+pub const BOOTBOOT_FB: u64 = 0xfffffffffc000000;
 
 /// bootboot struct virtual address
-pub const BOOTBOOT_INFO = 0xffffffffffe00000;
+pub const BOOTBOOT_INFO: u64 = 0xffffffffffe00000;
 
 /// environment string virtual address
-pub const BOOTBOOT_ENV = 0xffffffffffe01000;
+pub const BOOTBOOT_ENV: u64 = 0xffffffffffe01000;
 
 /// core loadable segment start
-pub const BOOTBOOT_CORE = 0xffffffffffe02000;
+pub const BOOTBOOT_CORE: u64 = 0xffffffffffe02000;
 
 /// hardcoded kernel name, static kernel memory addresses
-pub const PROTOCOL_MINIMAL = 0;
+pub const PROTOCOL_MINIMAL: u8 = 0;
 
 /// kernel name parsed from environment, static kernel memory addresses
-pub const PROTOCOL_STATIC = 1;
+pub const PROTOCOL_STATIC: u8 = 1;
 
 /// kernel name parsed, kernel memory addresses from ELF or PE symbols
-pub const PROTOCOL_DYNAMIC = 2;
+pub const PROTOCOL_DYNAMIC: u8 = 2;
 
 /// big-endian flag
-pub const PROTOCOL_BIGENDIAN = 0x80;
+pub const PROTOCOL_BIGENDIAN: u8 = 0x80;
 
 // loader types, just informational
-pub const LOADER_BIOS = 0 << 2;
-pub const LOADER_UEFI = 1 << 2;
-pub const LOADER_RPI = 2 << 2;
-pub const LOADER_COREBOOT = 3 << 2;
+pub const LOADER_BIOS: u8 = 0 << 2;
+pub const LOADER_UEFI: u8 = 1 << 2;
+pub const LOADER_RPI: u8 = 2 << 2;
+pub const LOADER_COREBOOT: u8 = 3 << 2;
 
 /// framebuffer pixel format, only 32 bits supported
 pub const FramebufferFormat = extern enum(u8) {
-    ARGB, RGBA, ABGR, BGRA
+    ARGB = 0,
+    RGBA = 1,
+    ABGR = 2,
+    BGRA = 3,
 };
 
-/// don't use. Reserved or unknown regions
-pub const MMAP_USED = 0;
+pub const MMapType = enum(u4) {
+    /// don't use. Reserved or unknown regions
+    MMAP_USED = 0,
 
-/// usable memory
-pub const MMAP_FREE = 1;
+    /// usable memory
+    MMAP_FREE = 1,
 
-/// acpi memory, volatile and non-volatile as well
-pub const MMAP_ACPI = 2;
+    /// acpi memory, volatile and non-volatile as well
+    MMAP_ACPI = 2,
 
-/// memory mapped IO region
-pub const MMAP_MMIO = 3;
+    /// memory mapped IO region
+    MMAP_MMIO = 3,
+};
 
 /// mmap entry, type is stored in least significant tetrad (half byte) of size
 /// this means size described in 16 byte units (not a problem, most modern
@@ -65,12 +70,18 @@ pub const MMapEnt = packed struct {
         return mmapEnt.size & 0xFFFFFFFFFFFFFFF0;
     }
 
-    pub inline fn getType(mmapEnt: MMapEnt) u16 {
-        return mmapEnt.size & 0xF;
+    pub inline fn getType(mmapEnt: MMapEnt) MMapType {
+        return @intToEnum(MMapType, @truncate(u4, mmapEnt.size));
     }
 
     pub inline fn isFree(mmapEnt: MMapEnt) bool {
         return (mmapEnt.size & 0xF) == 1;
+    }
+
+    test "" {
+        std.testing.refAllDecls(@This());
+        std.testing.expectEqual(@bitSizeOf(u64) * 2, @bitSizeOf(MMapEnt));
+        std.testing.expectEqual(@sizeOf(u64) * 2, @sizeOf(MMapEnt));
     }
 };
 
@@ -87,6 +98,11 @@ pub const x86_64 = extern struct {
     unused3: u64,
 };
 
+test "" {
+    std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(x86_64));
+    std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(x86_64));
+}
+
 pub const Aarch64 = extern struct {
     acpi_ptr: u64,
     mmio_ptr: u64,
@@ -98,10 +114,20 @@ pub const Aarch64 = extern struct {
     unused4: u64,
 };
 
+test "" {
+    std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Aarch64));
+    std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Aarch64));
+}
+
 pub const Arch = extern union {
     x86_64: x86_64,
     aarch64: Aarch64,
 };
+
+test "" {
+    std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Arch));
+    std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
+}
 
 pub inline fn getFramebuffer() [*]volatile u32 {
     return @ptrCast([*]volatile u32, &fb);
@@ -168,6 +194,11 @@ pub const Bootboot = packed struct {
     /// from 128th byte, MMapEnt[], more records may follow
     mmap: MMapEnt,
 };
+
+test "" {
+    std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
+    std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
+}
 
 test "" {
     std.testing.refAllDecls(@This());
