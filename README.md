@@ -6,6 +6,11 @@ This repo contains a zig'ified [BOOTBOOT](https://gitlab.com/bztsrc/bootboot) he
 
 Download the repo somehow then either:
 
+### Use a package manager
+
+* [zigmod](https://github.com/nektro/zigmod)
+* [zkg](https://github.com/mattnite/zkg)
+
 ### Add as package in `build.zig`
 
 * To `build.zig` add:

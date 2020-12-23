@@ -4,7 +4,7 @@ const Builder = std.build.Builder;
 pub fn build(b: *Builder) !void {
     const mode = b.standardReleaseOptions();
 
-    var main_tests = b.addTest("src/bootboot.zig");
+    var main_tests = b.addTest("bootboot.zig");
     main_tests.setBuildMode(mode);
 
     const test_step = b.step("test", "Run library tests");
