@@ -195,6 +195,11 @@ pub const Bootboot = packed struct {
     mmap: MMapEnt,
 };
 
+pub fn getMemoryMap() ?[]const MMapEnt {
+    if (bootboot.size <= 128) return null;
+    return @ptrCast([*]const MMapEnt, &bootboot.mmap)[0..((bootboot.size - 128) / @sizeOf(MMapEnt))];
+}
+
 test "" {
     std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
     std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
