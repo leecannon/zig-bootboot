@@ -195,8 +195,15 @@ pub const Bootboot = packed struct {
     mmap: MMapEnt,
 };
 
-pub fn getMemoryMap() ?[]const MMapEnt {
-    if (bootboot.size <= 128) return null;
+const testingMemoryMap: [0]MMapEnt = undefined;
+
+pub fn getMemoryMap() []const MMapEnt {
+    // Without the below code at test time this function triggers "TODO slice const inner struct"
+    if (comptime std.builtin.is_test) {
+        return testingMemoryMap[0..0];
+    }
+
+    if (bootboot.size <= 128) return @ptrCast([*]const MMapEnt, &bootboot.mmap)[0..0];
     return @ptrCast([*]const MMapEnt, &bootboot.mmap)[0..((bootboot.size - 128) / @sizeOf(MMapEnt))];
 }
 
