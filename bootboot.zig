@@ -62,19 +62,19 @@ pub const MMapEnt = packed struct {
     ptr: u64,
     size: u64,
 
-    pub inline fn getPtr(mmapEnt: MMapEnt) u64 {
+    pub fn getPtr(mmapEnt: MMapEnt) callconv(.Inline) u64 {
         return mmapEnt.ptr;
     }
 
-    pub inline fn getSize(mmapEnt: MMapEnt) u64 {
+    pub fn getSize(mmapEnt: MMapEnt) callconv(.Inline) u64 {
         return mmapEnt.size & 0xFFFFFFFFFFFFFFF0;
     }
 
-    pub inline fn getType(mmapEnt: MMapEnt) MMapType {
+    pub fn getType(mmapEnt: MMapEnt) callconv(.Inline) MMapType {
         return @intToEnum(MMapType, @truncate(u4, mmapEnt.size));
     }
 
-    pub inline fn isFree(mmapEnt: MMapEnt) bool {
+    pub fn isFree(mmapEnt: MMapEnt) callconv(.Inline) bool {
         return (mmapEnt.size & 0xF) == 1;
     }
 
@@ -129,15 +129,15 @@ test "" {
     std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
 }
 
-pub inline fn getFramebuffer() [*]volatile u32 {
+pub fn getFramebuffer() callconv(.Inline) [*]volatile u32 {
     return @ptrCast([*]volatile u32, &fb);
 }
 
-pub inline fn getFramebufferSlice() []volatile u32 {
+pub fn getFramebufferSlice() callconv(.Inline) []volatile u32 {
     return getFramebuffer()[0..(bootboot.fb_width * bootboot.fb_height)];
 }
 
-pub inline fn getEnvironment() [*:0]const u8 {
+pub fn getEnvironment() callconv(.Inline) [*:0]const u8 {
     return @ptrCast([*:0]const u8, &environment);
 }
 
