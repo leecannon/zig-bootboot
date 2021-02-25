@@ -98,7 +98,7 @@ pub const x86_64 = extern struct {
     unused3: u64,
 };
 
-test "" {
+test "x86_64" {
     std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(x86_64));
     std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(x86_64));
 }
@@ -114,7 +114,7 @@ pub const Aarch64 = extern struct {
     unused4: u64,
 };
 
-test "" {
+test "Aarch64" {
     std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Aarch64));
     std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Aarch64));
 }
@@ -124,10 +124,14 @@ pub const Arch = extern union {
     aarch64: Aarch64,
 };
 
-test "" {
+test "Arch" {
     std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Arch));
     std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
 }
+
+extern var fb: u32;
+extern const environment: u8;
+pub extern const bootboot: Bootboot;
 
 pub fn getFramebuffer() callconv(.Inline) [*]volatile u32 {
     return @ptrCast([*]volatile u32, &fb);
@@ -195,75 +199,12 @@ pub const Bootboot = packed struct {
     mmap: MMapEnt,
 };
 
-const testingMemoryMap: [0]MMapEnt = undefined;
-
 pub fn getMemoryMap() []const MMapEnt {
-    // Without the below code at test time this function triggers "TODO slice const inner struct"
-    if (comptime std.builtin.is_test) {
-        return testingMemoryMap[0..0];
-    }
-
     if (bootboot.size <= 128) return @ptrCast([*]const MMapEnt, &bootboot.mmap)[0..0];
     return @ptrCast([*]const MMapEnt, &bootboot.mmap)[0..((bootboot.size - 128) / @sizeOf(MMapEnt))];
 }
 
-test "" {
+test "Bootboot" {
     std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
     std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
-}
-
-test "" {
-    std.testing.refAllDecls(@This());
-}
-
-// Everything below this point it to enable testing this file as extern things fail to be resolved at link time
-
-usingnamespace buildExterns();
-const std = @import("std");
-fn buildExterns() type {
-    if (comptime std.builtin.is_test) {
-        return struct {
-            pub var fb: u32 = 1;
-            pub const environment: u8 = 1;
-            pub const bootboot: Bootboot = .{
-                .magic = [_]u8{0} ** 4,
-                .size = 0,
-                .protocol = 0,
-                .fb_type = .ARGB,
-                .numcores = 0,
-                .bspid = 0,
-                .timezone = 0,
-                .datetime = [_]u8{0} ** 8,
-                .initrd_ptr = 1,
-                .initrd_size = 0,
-                .fb_ptr = 1,
-                .fb_size = 0,
-                .fb_width = 0,
-                .fb_height = 0,
-                .fb_scanline = 0,
-                .arch = .{
-                    .x86_64 = .{
-                        .acpi_ptr = 1,
-                        .smbi_ptr = 1,
-                        .efi_ptr = 1,
-                        .mp_ptr = 1,
-                        .unused0 = 0,
-                        .unused1 = 0,
-                        .unused2 = 0,
-                        .unused3 = 0,
-                    },
-                },
-                .mmap = .{
-                    .ptr = 1,
-                    .size = 0,
-                },
-            };
-        };
-    } else {
-        return struct {
-            pub extern var fb: u32;
-            pub extern const environment: u8;
-            pub extern const bootboot: Bootboot;
-        };
-    }
 }
