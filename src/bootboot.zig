@@ -1,3 +1,5 @@
+const std = @import("std");
+
 pub const BOOTBOOT_MAGIC = "BOOT";
 
 /// memory mapped IO virtual address
