@@ -68,8 +68,12 @@ pub const MMapEnt = packed struct {
         return mmapEnt.ptr;
     }
 
-    pub fn getSize(mmapEnt: MMapEnt) callconv(.Inline) u64 {
+    pub fn getSizeInBytes(mmapEnt: MMapEnt) callconv(.Inline) u64 {
         return mmapEnt.size & 0xFFFFFFFFFFFFFFF0;
+    }
+
+    pub fn getSizeIn4KiBPages(mmapEnt: MMapEnt) callconv(.Inline) u64 {
+        return mmapEnt.getSizeInBytes() / 4096;
     }
 
     pub fn getType(mmapEnt: MMapEnt) callconv(.Inline) MMapType {
