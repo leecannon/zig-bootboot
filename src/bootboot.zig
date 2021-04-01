@@ -84,7 +84,7 @@ pub const MMapEnt = packed struct {
         return (mmapEnt.size & 0xF) == 1;
     }
 
-    test "MMapEnt" {
+    test {
         std.testing.refAllDecls(@This());
         std.testing.expectEqual(@bitSizeOf(u64) * 2, @bitSizeOf(MMapEnt));
         std.testing.expectEqual(@sizeOf(u64) * 2, @sizeOf(MMapEnt));
@@ -103,7 +103,7 @@ pub const x86_64 = extern struct {
     unused2: u64,
     unused3: u64,
 
-    test "x86_64" {
+    test {
         std.testing.refAllDecls(@This());
         std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(x86_64));
         std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(x86_64));
@@ -120,7 +120,7 @@ pub const Aarch64 = extern struct {
     unused3: u64,
     unused4: u64,
 
-    test "Aarch64" {
+    test {
         std.testing.refAllDecls(@This());
         std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Aarch64));
         std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Aarch64));
@@ -131,7 +131,7 @@ pub const Arch = extern union {
     x86_64: x86_64,
     aarch64: Aarch64,
 
-    test "Arch" {
+    test {
         std.testing.refAllDecls(@This());
         std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Arch));
         std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
@@ -219,7 +219,7 @@ pub const Bootboot = packed struct {
     /// from 128th byte, MMapEnt[], more records may follow
     mmap: MMapEnt,
 
-    test "Bootboot" {
+    test {
         std.testing.refAllDecls(@This());
         std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
         std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
