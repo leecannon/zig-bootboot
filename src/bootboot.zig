@@ -64,30 +64,30 @@ pub const MMapEnt = packed struct {
     ptr: u64,
     size: u64,
 
-    pub fn getPtr(mmapEnt: MMapEnt) callconv(.Inline) u64 {
+    pub inline fn getPtr(mmapEnt: MMapEnt) u64 {
         return mmapEnt.ptr;
     }
 
-    pub fn getSizeInBytes(mmapEnt: MMapEnt) callconv(.Inline) u64 {
+    pub inline fn getSizeInBytes(mmapEnt: MMapEnt) u64 {
         return mmapEnt.size & 0xFFFFFFFFFFFFFFF0;
     }
 
-    pub fn getSizeIn4KiBPages(mmapEnt: MMapEnt) callconv(.Inline) u64 {
+    pub inline fn getSizeIn4KiBPages(mmapEnt: MMapEnt) u64 {
         return mmapEnt.getSizeInBytes() / 4096;
     }
 
-    pub fn getType(mmapEnt: MMapEnt) callconv(.Inline) MMapType {
+    pub inline fn getType(mmapEnt: MMapEnt) MMapType {
         return @intToEnum(MMapType, @truncate(u4, mmapEnt.size));
     }
 
-    pub fn isFree(mmapEnt: MMapEnt) callconv(.Inline) bool {
+    pub inline fn isFree(mmapEnt: MMapEnt) bool {
         return (mmapEnt.size & 0xF) == 1;
     }
 
     test {
         std.testing.refAllDecls(@This());
-        std.testing.expectEqual(@bitSizeOf(u64) * 2, @bitSizeOf(MMapEnt));
-        std.testing.expectEqual(@sizeOf(u64) * 2, @sizeOf(MMapEnt));
+        try std.testing.expectEqual(@bitSizeOf(u64) * 2, @bitSizeOf(MMapEnt));
+        try std.testing.expectEqual(@sizeOf(u64) * 2, @sizeOf(MMapEnt));
     }
 };
 
@@ -105,8 +105,8 @@ pub const x86_64 = extern struct {
 
     test {
         std.testing.refAllDecls(@This());
-        std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(x86_64));
-        std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(x86_64));
+        try std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(x86_64));
+        try std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(x86_64));
     }
 };
 
@@ -122,8 +122,8 @@ pub const Aarch64 = extern struct {
 
     test {
         std.testing.refAllDecls(@This());
-        std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Aarch64));
-        std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Aarch64));
+        try std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Aarch64));
+        try std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Aarch64));
     }
 };
 
@@ -133,8 +133,8 @@ pub const Arch = extern union {
 
     test {
         std.testing.refAllDecls(@This());
-        std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Arch));
-        std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
+        try std.testing.expectEqual(@bitSizeOf(u64) * 8, @bitSizeOf(Arch));
+        try std.testing.expectEqual(@sizeOf(u64) * 8, @sizeOf(Arch));
     }
 };
 
@@ -150,19 +150,19 @@ const externs = struct {
     pub extern const bootboot: Bootboot;
 };
 
-pub fn getBootboot() callconv(.Inline) Bootboot {
+pub inline fn getBootboot() Bootboot {
     return externs.bootboot;
 }
 
-pub fn getFramebuffer() callconv(.Inline) [*]volatile u32 {
+pub inline fn getFramebuffer() [*]volatile u32 {
     return @ptrCast([*]volatile u32, &externs.fb);
 }
 
-pub fn getFramebufferSlice() callconv(.Inline) []volatile u32 {
+pub inline fn getFramebufferSlice() []volatile u32 {
     return getFramebuffer()[0..(externs.bootboot.fb_width * externs.bootboot.fb_height)];
 }
 
-pub fn getEnvironment() callconv(.Inline) [*:0]const u8 {
+pub inline fn getEnvironment() [*:0]const u8 {
     return @ptrCast([*:0]const u8, &externs.environment);
 }
 
@@ -221,8 +221,8 @@ pub const Bootboot = packed struct {
 
     test {
         std.testing.refAllDecls(@This());
-        std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
-        std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
+        try std.testing.expectEqual(@bitSizeOf(u64) * 18, @bitSizeOf(Bootboot));
+        try std.testing.expectEqual(@sizeOf(u64) * 18, @sizeOf(Bootboot));
     }
 };
 
