@@ -36,7 +36,7 @@ pub const LOADER_RPI: u8 = 2 << 2;
 pub const LOADER_COREBOOT: u8 = 3 << 2;
 
 /// framebuffer pixel format, only 32 bits supported
-pub const FramebufferFormat = extern enum(u8) {
+pub const FramebufferFormat = enum(u8) {
     ARGB = 0,
     RGBA = 1,
     ABGR = 2,
