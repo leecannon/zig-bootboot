@@ -2,7 +2,7 @@
 
 This repo contains a zig'ified [BOOTBOOT](https://gitlab.com/bztsrc/bootboot) header file.
 
-## How to use
+## How to get
 
 ### Gyro
 
