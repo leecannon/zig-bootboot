@@ -4,29 +4,20 @@ This repo contains a zig'ified [BOOTBOOT](https://gitlab.com/bztsrc/bootboot) he
 
 ## How to use
 
-Download the repo somehow then either:
+### Gyro
 
-### Use a package manager
+`gyro add leecannon/bootboot`
 
-* [zigmod](https://github.com/nektro/zigmod)
-* [zkg](https://github.com/mattnite/zkg)
+### Zigmod
 
-### Add as package in `build.zig`
+`gyro add leecannon/bootboot`
 
-* To `build.zig` add:
-  
-   ```zig
-   exe.addPackagePath("bootboot", "zig-bootboot/bootboot.zig"); // or whatever the path is
-   ```
-* Then the package is available within any zig file:
-  
-   ```zig
-   const bootboot = @import("bootboot");
-   ```
+### Git
 
-### Import directly
+#### Submodule
 
-In any zig file add:
-```zig
-const bootboot = @import("../zig-bootboot/bootboot.zig"); // or whatever the path is from *that* file
-```
+`git submodule add https://github.com/leecannon/zig-bootboot zig-bootboot`
+
+#### Clone
+
+`git clone https://github.com/leecannon/zig-bootboot`
