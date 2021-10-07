@@ -10,7 +10,7 @@ This repo contains a zig'ified [BOOTBOOT](https://gitlab.com/bztsrc/bootboot) he
 
 ### Zigmod
 
-`gyro add leecannon/bootboot`
+`zigmod aq add 1/leecannon/bootboot`
 
 ### Git
 
