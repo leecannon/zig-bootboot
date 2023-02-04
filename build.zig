@@ -1,11 +1,12 @@
 const std = @import("std");
-const Builder = std.build.Builder;
 
-pub fn build(b: *Builder) !void {
-    const mode = b.standardReleaseOptions();
+pub fn build(b: *std.Build) !void {
+    const optimize = b.standardOptimizeOption(.{});
 
-    var main_tests = b.addTest("src/bootboot.zig");
-    main_tests.setBuildMode(mode);
+    var main_tests = b.addTest(.{
+        .root_source_file = .{ .path = "src/bootboot.zig" },
+        .optimize = optimize,
+    });
 
     const test_step = b.step("test", "Run library tests");
     test_step.dependOn(&main_tests.step);
