@@ -77,7 +77,7 @@ pub const MMapEnt = extern struct {
     }
 
     pub inline fn getType(mmapEnt: MMapEnt) MMapType {
-        return @enumFromInt(MMapType, @truncate(u4, mmapEnt.size));
+        return @enumFromInt(@as(u4, @truncate(mmapEnt.size)));
     }
 
     pub inline fn isFree(mmapEnt: MMapEnt) bool {
@@ -147,7 +147,7 @@ pub inline fn getBootboot() Bootboot {
 }
 
 pub inline fn getFramebuffer() [*]volatile u32 {
-    return @ptrCast([*]volatile u32, &externs.fb);
+    return @ptrCast(&externs.fb);
 }
 
 pub inline fn getFramebufferSlice() []volatile u32 {
@@ -155,7 +155,7 @@ pub inline fn getFramebufferSlice() []volatile u32 {
 }
 
 pub inline fn getEnvironment() [*:0]const u8 {
-    return @ptrCast([*:0]const u8, &externs.environment);
+    return @ptrCast(&externs.environment);
 }
 
 /// first 64 bytes is platform independent
@@ -218,7 +218,7 @@ pub const Bootboot = extern struct {
 
 pub fn getMemoryMap() []const MMapEnt {
     if (externs.bootboot.size <= 128) return &[_]MMapEnt{};
-    return @ptrCast([*]const MMapEnt, @alignCast(@alignOf(MMapEnt), &externs.bootboot.mmap))[0..((externs.bootboot.size - 128) / @sizeOf(MMapEnt))];
+    return @as([*]const MMapEnt, @ptrCast(@alignCast(&externs.bootboot.mmap)))[0..((externs.bootboot.size - 128) / @sizeOf(MMapEnt))];
 }
 
 comptime {
